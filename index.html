@@ -9,8 +9,6 @@
 <style>
   * { box-sizing:border-box; margin:0; padding:0; }
   body { background:#07071a; color:white; font-family:'Nunito',sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
-
-  /* ── HEADER ── */
   .tv-header { background:linear-gradient(135deg,#1a1a3e,#0d0d2b); border-bottom:3px solid #f59e0b; padding:10px 32px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
   .tv-header h1 { font-family:'Orbitron',sans-serif; font-size:1.5rem; font-weight:900; background:linear-gradient(90deg,#f59e0b,#fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:0.06em; }
   .tv-header .sub { font-size:0.65rem; color:#64748b; letter-spacing:0.18em; text-transform:uppercase; font-weight:700; }
@@ -18,17 +16,11 @@
   .live-badge { display:flex; align-items:center; gap:7px; background:rgba(239,68,68,0.12); border:1px solid #ef4444; border-radius:20px; padding:5px 14px; font-size:0.75rem; font-weight:800; color:#ef4444; letter-spacing:0.12em; }
   .live-dot { width:8px; height:8px; background:#ef4444; border-radius:50%; animation:blink 1.5s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-  /* ── VIEW TOGGLE ── */
   .view-tabs { display:flex; gap:0; border:1px solid #334155; border-radius:10px; overflow:hidden; }
   .view-tab { padding:6px 18px; font-size:0.75rem; font-weight:800; cursor:pointer; background:transparent; color:#475569; border:none; font-family:'Nunito',sans-serif; letter-spacing:0.06em; transition:all 0.2s; }
   .view-tab.active { background:#f59e0b; color:#0d0d2b; }
-
-  /* ── VIEWS ── */
   .view { flex:1; display:none; overflow:hidden; }
   .view.active { display:flex; }
-
-  /* ── RANKING VIEW (4 cols) ── */
   #view-ranking { flex-direction:column; }
   .grid { flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:0; overflow:hidden; }
   .col { display:flex; flex-direction:column; border-right:1px solid #1e293b; overflow:hidden; }
@@ -50,18 +42,14 @@
   .pos { font-family:'Orbitron',sans-serif; font-size:0.85rem; font-weight:900; color:#334155; width:30px; text-align:center; flex-shrink:0; }
   .name { font-size:1rem; font-weight:800; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .score { font-family:'Orbitron',sans-serif; font-size:1.15rem; font-weight:900; flex-shrink:0; }
-  .jury-tag { font-size:0.55rem; color:#64748b; font-weight:700; font-family:'Nunito',sans-serif; }
+  .zappka-badge { display:inline-flex; align-items:center; gap:3px; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:20px; padding:2px 7px; font-size:0.65rem; font-weight:800; color:#22c55e; margin-left:6px; font-family:'Nunito',sans-serif; }
   .empty { flex:1; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; color:#1e293b; font-size:0.85rem; }
   .empty .ico { font-size:2.5rem; }
-
-  /* ── SNAKE 1V1 TURNIEJ VIEW ── */
   #view-1v1 { flex-direction:column; padding:20px 40px; gap:20px; overflow:hidden; }
   .turniej-title { font-family:'Orbitron',sans-serif; font-size:1.4rem; font-weight:900; color:#8b5cf6; display:flex; align-items:center; gap:12px; border-bottom:2px solid #8b5cf644; padding-bottom:12px; flex-shrink:0; }
   .turniej-title .badge { background:#8b5cf6; color:white; font-size:0.65rem; padding:4px 12px; border-radius:10px; font-family:'Nunito',sans-serif; letter-spacing:0.1em; }
   .turniej-layout { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:24px; overflow:hidden; }
-
-  /* Standings */
-  .standings { display:flex; flex-direction:column; gap:0; overflow:hidden; }
+  .standings { display:flex; flex-direction:column; overflow:hidden; }
   .standings h3 { font-family:'Orbitron',sans-serif; font-size:0.8rem; color:#64748b; letter-spacing:0.12em; margin-bottom:10px; flex-shrink:0; }
   .standings-list { flex:1; display:flex; flex-direction:column; gap:6px; overflow:hidden; }
   .standing-row { display:flex; align-items:center; gap:14px; padding:12px 18px; border-radius:12px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.12); animation:fadeIn 0.35s ease both; }
@@ -73,24 +61,18 @@
   .s-name { font-size:1.1rem; font-weight:800; flex:1; }
   .s-wins { font-family:'Orbitron',sans-serif; font-size:1.4rem; font-weight:900; color:#8b5cf6; }
   .s-wins span { font-size:0.6rem; color:#64748b; font-family:'Nunito',sans-serif; }
-
-  /* Recent matches */
   .matches { display:flex; flex-direction:column; overflow:hidden; }
   .matches h3 { font-family:'Orbitron',sans-serif; font-size:0.8rem; color:#64748b; letter-spacing:0.12em; margin-bottom:10px; flex-shrink:0; }
   .matches-list { flex:1; display:flex; flex-direction:column; gap:6px; overflow:hidden; }
-  .match-card { display:flex; align-items:center; gap:0; border-radius:12px; overflow:hidden; border:1px solid rgba(139,92,246,0.15); animation:fadeIn 0.35s ease both; flex-shrink:0; }
+  .match-card { display:flex; align-items:center; border-radius:12px; overflow:hidden; border:1px solid rgba(139,92,246,0.15); animation:fadeIn 0.35s ease both; flex-shrink:0; }
   .match-winner { background:rgba(139,92,246,0.2); padding:12px 16px; font-size:1rem; font-weight:800; color:#a78bfa; flex:1; }
-  .match-vs { background:#0d0d2b; padding:12px 10px; font-size:0.7rem; color:#334155; font-weight:700; flex-shrink:0; text-align:center; }
+  .match-vs { background:#0d0d2b; padding:12px 10px; font-size:0.7rem; color:#334155; font-weight:700; flex-shrink:0; }
   .match-loser { background:rgba(255,255,255,0.02); padding:12px 16px; font-size:1rem; font-weight:700; color:#475569; flex:1; text-align:right; }
-  .match-trophy { font-size:1rem; margin-right:6px; }
-
-  /* ── FOOTER ── */
   .tv-footer { background:#0d0d2b; border-top:1px solid #1e293b; padding:6px 32px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
   .tv-footer span { font-size:0.65rem; color:#334155; letter-spacing:0.08em; }
 </style>
 </head>
 <body>
-
 <div class="tv-header">
   <div>
     <div class="sub">Topartowe Mistrzostwa w</div>
@@ -98,14 +80,13 @@
   </div>
   <div class="header-right">
     <div class="view-tabs">
-      <button class="view-tab active" onclick="switchView('ranking')">🏆 Ranking</button>
-      <button class="view-tab" onclick="switchView('1v1')">⚔️ Snake 1v1</button>
+      <button class="view-tab active" onclick="switchView('ranking',this)">🏆 Ranking</button>
+      <button class="view-tab" onclick="switchView('1v1',this)">⚔️ Snake 1v1</button>
     </div>
     <div class="live-badge"><div class="live-dot"></div>LIVE</div>
   </div>
 </div>
 
-<!-- RANKING VIEW -->
 <div class="view active" id="view-ranking">
   <div class="grid">
     <div class="col col-ninja">
@@ -127,7 +108,6 @@
   </div>
 </div>
 
-<!-- SNAKE 1V1 VIEW -->
 <div class="view" id="view-1v1">
   <div class="turniej-title">
     🐍 Snake 1v1 — Turniej
@@ -156,11 +136,11 @@ firebase.initializeApp({apiKey:"AIzaSyBTOosW_Gy6iO5SnRo47tYzGcGJPqbvF2E",authDom
 var db = firebase.database();
 const MAX = 14;
 
-function switchView(v) {
+function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.view-tab').forEach(el => el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
 }
 
 function medal(i) {
@@ -181,8 +161,9 @@ function loadGame(key) {
     const list = document.getElementById('list-'+key);
     const cnt  = document.getElementById('cnt-'+key);
     const data = snap.val() || {};
+    // Sortowanie TYLKO po wyniku — Żappka nie wpływa na kolejność
     const entries = Object.values(data)
-      .sort((a,b) => (b.score+(b.jury||0)) - (a.score+(a.jury||0)))
+      .sort((a,b) => b.score - a.score)
       .slice(0, MAX);
     cnt.textContent = entries.length ? entries.length+' graczy' : '';
     if (!entries.length) {
@@ -190,10 +171,9 @@ function loadGame(key) {
       return;
     }
     list.innerHTML = entries.map((e,i) => {
-      const total = e.score+(e.jury||0);
-      const j = e.jury ? `<span class="jury-tag">+${e.jury}j</span>` : '';
+      const zappka = e.jury ? `<span class="zappka-badge">🐸 #${e.jury}</span>` : '';
       return `<div class="row row-${i<3?i+1:0}" style="animation-delay:${i*0.04}s">
-        ${medal(i)}<span class="name">${e.name}</span><span class="score">${total}${j}</span>
+        ${medal(i)}<span class="name">${e.name}${zappka}</span><span class="score">${e.score}</span>
       </div>`;
     }).join('');
   });
@@ -203,41 +183,19 @@ function loadSnake1v1() {
   db.ref('snake1v1').on('value', snap => {
     const data = snap.val() || {};
     const matches = Object.values(data).filter(m => m.winner);
-
-    // Count
     document.getElementById('match-count').textContent = matches.length + ' meczów rozegranych';
-
-    // Standings
     const wins = {};
     matches.forEach(m => { wins[m.winner] = (wins[m.winner]||0)+1; });
     const sorted = Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,8);
     const sl = document.getElementById('standings-list');
-    if (!sorted.length) {
-      sl.innerHTML = '<div class="empty"><div class="ico">⚔️</div><div>Brak meczów</div></div>';
-    } else {
-      sl.innerHTML = sorted.map(([name,w],i) =>
-        `<div class="standing-row standing-row-${i<3?i+1:0}" style="animation-delay:${i*0.05}s">
-          ${sMedal(i)}
-          <span class="s-name">${name}</span>
-          <span class="s-wins">${w}<span> W</span></span>
-        </div>`
-      ).join('');
-    }
-
-    // Recent matches (last 6)
+    sl.innerHTML = sorted.length
+      ? sorted.map(([name,w],i) => `<div class="standing-row standing-row-${i<3?i+1:0}" style="animation-delay:${i*0.05}s">${sMedal(i)}<span class="s-name">${name}</span><span class="s-wins">${w}<span> W</span></span></div>`).join('')
+      : '<div class="empty"><div class="ico">⚔️</div><div>Brak meczów</div></div>';
     const recent = matches.slice(-6).reverse();
     const ml = document.getElementById('matches-list');
-    if (!recent.length) {
-      ml.innerHTML = '<div class="empty"><div class="ico">🏟️</div><div>Brak meczów</div></div>';
-    } else {
-      ml.innerHTML = recent.map((m,i) =>
-        `<div class="match-card" style="animation-delay:${i*0.05}s">
-          <div class="match-winner"><span class="match-trophy">🏆</span>${m.winner}</div>
-          <div class="match-vs">VS</div>
-          <div class="match-loser">${m.loser||'?'}</div>
-        </div>`
-      ).join('');
-    }
+    ml.innerHTML = recent.length
+      ? recent.map((m,i) => `<div class="match-card" style="animation-delay:${i*0.05}s"><div class="match-winner">🏆 ${m.winner}</div><div class="match-vs">VS</div><div class="match-loser">${m.loser||'?'}</div></div>`).join('')
+      : '<div class="empty"><div class="ico">🏟️</div><div>Brak meczów</div></div>';
   });
 }
 
