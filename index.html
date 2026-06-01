@@ -4,8 +4,6 @@
 <meta charset="UTF-8"/>
 <title>Topartowe Mistrzostwa w Triki — TV</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"/>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
   * { box-sizing:border-box; margin:0; padding:0; }
   body { background:#07071a; color:white; font-family:'Nunito',sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
@@ -132,8 +130,6 @@
 </div>
 
 <script>
-firebase.initializeApp({apiKey:"AIzaSyBTOosW_Gy6iO5SnRo47tYzGcGJPqbvF2E",authDomain:"ninja-frog-ranking.firebaseapp.com",databaseURL:"https://ninja-frog-ranking-default-rtdb.europe-west1.firebasedatabase.app",projectId:"ninja-frog-ranking",storageBucket:"ninja-frog-ranking.firebasestorage.app",messagingSenderId:"425653435372",appId:"1:425653435372:web:cb549a5773deb7b82ddec9"});
-var db = firebase.database();
 const MAX = 14;
 
 function switchView(v, btn) {
@@ -199,8 +195,56 @@ function loadSnake1v1() {
   });
 }
 
-['ninja','bokser','toss','snake'].forEach(loadGame);
-loadSnake1v1();
+// Polling przez REST API zamiast WebSocket (omija firewall biurowy)
+const DB_URL = 'https://ninja-frog-ranking-default-rtdb.europe-west1.firebasedatabase.app';
+const POLL_INTERVAL = 5000; // co 5 sekund
+
+async function fetchData(key) {
+  try {
+    const res = await fetch(DB_URL + '/' + key + '.json');
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+async function pollGame(key) {
+  const data = await fetchData(key);
+  const list = document.getElementById('list-'+key);
+  const cnt  = document.getElementById('cnt-'+key);
+  if (!data) { list.innerHTML = '<div class="empty"><div class="ico">🎮</div><div>Brak wyników</div></div>'; return; }
+  const entries = Object.values(data).sort((a,b) => b.score - a.score).slice(0, MAX);
+  cnt.textContent = entries.length ? entries.length+' graczy' : '';
+  if (!entries.length) { list.innerHTML = '<div class="empty"><div class="ico">🎮</div><div>Brak wyników</div></div>'; return; }
+  list.innerHTML = entries.map((e,i) => {
+    const zappka = e.jury ? '<span class="zappka-badge">🐸 #'+e.jury+'</span>' : '';
+    return '<div class="row row-'+(i<3?i+1:0)+'" style="animation-delay:'+(i*0.04)+'s">'+medal(i)+'<span class="name">'+e.name+zappka+'</span><span class="score">'+e.score+'</span></div>';
+  }).join('');
+}
+
+async function pollSnake1v1() {
+  const data = await fetchData('snake1v1');
+  const matches = data ? Object.values(data).filter(m => m.winner) : [];
+  document.getElementById('match-count').textContent = matches.length + ' meczów rozegranych';
+  const wins = {};
+  matches.forEach(m => { wins[m.winner] = (wins[m.winner]||0)+1; });
+  const sorted = Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const sl = document.getElementById('standings-list');
+  sl.innerHTML = sorted.length
+    ? sorted.map(([name,w],i) => '<div class="standing-row standing-row-'+(i<3?i+1:0)+'" style="animation-delay:'+(i*0.05)+'s">'+sMedal(i)+'<span class="s-name">'+name+'</span><span class="s-wins">'+w+'<span> W</span></span></div>').join('')
+    : '<div class="empty"><div class="ico">⚔️</div><div>Brak meczów</div></div>';
+  const recent = matches.slice(-6).reverse();
+  const ml = document.getElementById('matches-list');
+  ml.innerHTML = recent.length
+    ? recent.map((m,i) => '<div class="match-card" style="animation-delay:'+(i*0.05)+'s"><div class="match-winner">🏆 '+m.winner+'</div><div class="match-vs">VS</div><div class="match-loser">'+(m.loser||'?')+'</div></div>').join('')
+    : '<div class="empty"><div class="ico">🏟️</div><div>Brak meczów</div></div>';
+}
+
+async function pollAll() {
+  await Promise.all(['ninja','bokser','toss','snake'].map(pollGame));
+  await pollSnake1v1();
+}
+
+pollAll();
+setInterval(pollAll, POLL_INTERVAL);
 </script>
 </body>
 </html>
