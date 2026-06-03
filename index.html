@@ -238,9 +238,43 @@ async function pollSnake1v1() {
     : '<div class="empty"><div class="ico">🏟️</div><div>Brak meczów</div></div>';
 }
 
+var lastHash={};
+function hashVal(v){return JSON.stringify(v);}
+
 async function pollAll() {
-  await Promise.all(['ninja','bokser','toss','snake'].map(pollGame));
-  await pollSnake1v1();
+  await Promise.all(['ninja','bokser','toss','snake'].map(async function(key){
+    const val = await fetchData(key);
+    const h = hashVal(val);
+    if(h===lastHash[key])return;
+    lastHash[key]=h;
+    const list = document.getElementById('list-'+key);
+    const cnt  = document.getElementById('cnt-'+key);
+    if(!val){list.innerHTML='<div class="empty"><div class="ico">🎮</div><div>Brak wyników</div></div>';return;}
+    const entries = Object.values(val).sort((a,b)=>b.score-a.score).slice(0,MAX);
+    cnt.textContent = entries.length?entries.length+' graczy':'';
+    if(!entries.length){list.innerHTML='<div class="empty"><div class="ico">🎮</div><div>Brak wyników</div></div>';return;}
+    list.innerHTML = entries.map((e,i)=>{
+      const zappka=e.jury?'<span class="zappka-badge">🐸 #'+e.jury+'</span>':'';
+      return '<div class="row row-'+(i<3?i+1:0)+'" style="animation-delay:'+(i*0.04)+'s">'+medal(i)+'<span class="name">'+e.name+zappka+'</span><span class="score">'+e.score+'</span></div>';
+    }).join('');
+  }));
+  const val1v1 = await fetchData('snake1v1');
+  const h1v1 = hashVal(val1v1);
+  if(h1v1!==lastHash['snake1v1']){
+    lastHash['snake1v1']=h1v1;
+    const matches=val1v1?Object.values(val1v1).filter(m=>m.winner):[];
+    document.getElementById('match-count').textContent=matches.length+' meczów rozegranych';
+    const wins={};
+    matches.forEach(m=>{wins[m.winner]=(wins[m.winner]||0)+1;});
+    const sorted=Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    document.getElementById('standings-list').innerHTML=sorted.length
+      ?sorted.map(([name,w],i)=>'<div class="standing-row standing-row-'+(i<3?i+1:0)+'" style="animation-delay:'+(i*0.05)+'s">'+sMedal(i)+'<span class="s-name">'+name+'</span><span class="s-wins">'+w+'<span> W</span></span></div>').join('')
+      :'<div class="empty"><div class="ico">⚔️</div><div>Brak meczów</div></div>';
+    const recent=matches.slice(-6).reverse();
+    document.getElementById('matches-list').innerHTML=recent.length
+      ?recent.map((m,i)=>'<div class="match-card" style="animation-delay:'+(i*0.05)+'s"><div class="match-winner">🏆 '+m.winner+'</div><div class="match-vs">VS</div><div class="match-loser">'+(m.loser||'?')+'</div></div>').join('')
+      :'<div class="empty"><div class="ico">🏟️</div><div>Brak meczów</div></div>';
+  }
 }
 
 pollAll();
