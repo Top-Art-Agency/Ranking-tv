@@ -20,7 +20,7 @@
   .view { flex:1; display:none; overflow:hidden; }
   .view.active { display:flex; }
   #view-ranking { flex-direction:column; }
-  .grid { flex:1; display:grid; grid-template-columns:repeat(4,1fr); gap:0; overflow:hidden; }
+  .grid { flex:1; display:grid; grid-template-columns:repeat(5,1fr); gap:0; overflow:hidden; }
   .col { display:flex; flex-direction:column; border-right:1px solid #1e293b; overflow:hidden; }
   .col:last-child { border-right:none; }
   .col-header { padding:10px 16px 8px; border-bottom:2px solid; flex-shrink:0; display:flex; align-items:center; }
@@ -30,6 +30,7 @@
   .col-bokser .col-header { border-color:#ef444444; } .col-bokser .game-name,.col-bokser .score { color:#ef4444; }
   .col-toss .col-header { border-color:#f59e0b44; } .col-toss .game-name,.col-toss .score { color:#f59e0b; }
   .col-snake .col-header { border-color:#10b98144; } .col-snake .game-name,.col-snake .score { color:#10b981; }
+  .col-pilka .col-header { border-color:#f9731644; } .col-pilka .game-name,.col-pilka .score { color:#f97316; }
   .col-body { flex:1; overflow:hidden; padding:6px 0; display:flex; flex-direction:column; gap:2px; }
   .row { display:flex; align-items:center; gap:10px; padding:9px 16px; animation:fadeIn 0.35s ease both; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
@@ -102,6 +103,10 @@
     <div class="col col-snake">
       <div class="col-header"><span class="game-name">🐍 Snake</span><span class="game-count" id="cnt-snake"></span></div>
       <div class="col-body" id="list-snake"></div>
+    </div>
+      <div class="col col-pilka">
+      <div class="col-header"><span class="game-name">⚽ Piłka Nożna</span><span class="game-count" id="cnt-pilka"></span></div>
+      <div class="col-body" id="list-pilka"></div>
     </div>
   </div>
 </div>
@@ -242,7 +247,7 @@ var lastHash={};
 function hashVal(v){return JSON.stringify(v);}
 
 async function pollAll() {
-  await Promise.all(['ninja','bokser','toss','snake'].map(async function(key){
+  await Promise.all(['ninja','bokser','toss','snake','pilka'].map(async function(key){
     const val = await fetchData(key);
     const h = hashVal(val);
     if(h===lastHash[key])return;
