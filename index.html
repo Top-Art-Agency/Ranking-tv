@@ -5,489 +5,185 @@
 <title>Żabkowe Mistrzostwa w Triki — TV</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet"/>
 <style>
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { background:#07071a; color:white; font-family:'Nunito',sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
-
-  /* HEADER */
-  .tv-header { background:linear-gradient(135deg,#1a1a3e,#0d0d2b); border-bottom:3px solid #f59e0b; padding:10px 32px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-  .tv-header h1 { font-family:'Orbitron',sans-serif; font-size:1.4rem; font-weight:900; background:linear-gradient(90deg,#f59e0b,#fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; letter-spacing:0.06em; }
-  .tv-header .sub { font-size:0.6rem; color:#64748b; letter-spacing:0.18em; text-transform:uppercase; font-weight:700; }
-  .live-badge { display:flex; align-items:center; gap:7px; background:rgba(239,68,68,0.12); border:1px solid #ef4444; border-radius:20px; padding:5px 14px; font-size:0.75rem; font-weight:800; color:#ef4444; letter-spacing:0.12em; }
-  .live-dot { width:8px; height:8px; background:#ef4444; border-radius:50%; animation:blink 1.5s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-  /* NAV TABS */
-  .nav { display:flex; gap:0; background:#0d0d2b; border-bottom:1px solid #1e293b; flex-shrink:0; overflow-x:auto; }
-  .nav-btn { padding:12px 24px; font-size:0.85rem; font-weight:800; cursor:pointer; background:transparent; color:#475569; border:none; border-bottom:3px solid transparent; font-family:'Nunito',sans-serif; letter-spacing:0.04em; transition:all 0.2s; white-space:nowrap; }
-  .nav-btn:hover { color:#94a3b8; }
-  .nav-btn.active { color:var(--c); border-bottom-color:var(--c); background:rgba(255,255,255,0.03); }
-
-  /* VIEWS */
-  .view { flex:1; display:none; flex-direction:column; overflow:hidden; }
-  .view.active { display:flex; }
-
-  /* GAME VIEW */
-  .game-header { padding:20px 40px 12px; display:flex; align-items:baseline; gap:16px; flex-shrink:0; }
-  .game-title { font-family:'Orbitron',sans-serif; font-size:2rem; font-weight:900; }
-  .game-count { font-size:0.85rem; color:#475569; font-weight:700; }
-
-  .ranking-table { flex:1; overflow-y:auto; padding:0 40px 20px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent; }
-
-  .entry { display:flex; align-items:center; gap:16px; padding:12px 20px; border-radius:12px; margin-bottom:6px; transition:background 0.2s; }
-  .entry-1 { background:linear-gradient(90deg,rgba(251,191,36,0.18),rgba(251,191,36,0.04)); border:1px solid rgba(251,191,36,0.3); }
-  .entry-2 { background:linear-gradient(90deg,rgba(148,163,184,0.12),rgba(148,163,184,0.02)); border:1px solid rgba(148,163,184,0.2); }
-  .entry-3 { background:linear-gradient(90deg,rgba(180,120,60,0.12),rgba(180,120,60,0.02)); border:1px solid rgba(180,120,60,0.2); }
-  .entry-n { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); }
-
-  .e-medal { font-size:1.8rem; width:40px; text-align:center; flex-shrink:0; }
-  .e-pos { font-family:'Orbitron',sans-serif; font-size:1rem; font-weight:900; color:#334155; width:40px; text-align:center; flex-shrink:0; }
-  .e-name { font-size:1.2rem; font-weight:800; flex:1; }
-  .e-score { font-family:'Orbitron',sans-serif; font-size:1.5rem; font-weight:900; flex-shrink:0; }
-  .e-zappka { font-size:0.7rem; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:20px; padding:2px 8px; color:#22c55e; font-weight:800; margin-left:8px; }
-
-  .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#1e293b; gap:12px; }
-  .empty-state .ico { font-size:4rem; }
-  .empty-state p { font-size:1rem; }
-
-  /* SNAKE 1V1 */
-  .s1v1-layout { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:32px; padding:0 40px 20px; overflow:hidden; }
-  .s1v1-panel { display:flex; flex-direction:column; overflow:hidden; }
-  .s1v1-panel h3 { font-family:'Orbitron',sans-serif; font-size:0.8rem; color:#64748b; letter-spacing:0.12em; margin-bottom:12px; flex-shrink:0; }
-  .s1v1-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent; }
-
-  .match-card { display:flex; align-items:center; border-radius:10px; overflow:hidden; border:1px solid rgba(139,92,246,0.15); flex-shrink:0; }
-  .match-winner { background:rgba(139,92,246,0.2); padding:10px 16px; font-size:1rem; font-weight:800; color:#a78bfa; flex:1; }
-  .match-vs { background:#0d0d2b; padding:10px 10px; font-size:0.7rem; color:#334155; font-weight:700; flex-shrink:0; }
-  .match-loser { background:rgba(255,255,255,0.02); padding:10px 16px; font-size:1rem; font-weight:700; color:#475569; flex:1; text-align:right; }
-
-  /* ALL GRID */
-  .all-grid { flex:1; display:grid; grid-template-columns:repeat(6,1fr); gap:0; overflow:hidden; }
-  .all-col { display:flex; flex-direction:column; border-right:1px solid #1e293b; overflow:hidden; }
-  .all-col:last-child { border-right:none; }
-  .all-header { padding:10px 14px 8px; border-bottom:2px solid var(--c); font-family:'Orbitron',sans-serif; font-size:0.75rem; font-weight:900; color:var(--c); flex-shrink:0; letter-spacing:0.03em; }
-  .all-list { flex:1; overflow-y:auto; padding:4px 0; display:flex; flex-direction:column; gap:2px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent; }
-  .all-row { display:flex; align-items:center; gap:8px; padding:7px 12px; }
-  .all-row-1 { background:linear-gradient(90deg,rgba(251,191,36,0.13),transparent); }
-  .all-row-2 { background:linear-gradient(90deg,rgba(148,163,184,0.08),transparent); }
-  .all-row-3 { background:linear-gradient(90deg,rgba(180,120,60,0.08),transparent); }
-  .all-medal { font-size:1.1rem; width:24px; text-align:center; flex-shrink:0; }
-  .all-pos { font-family:'Orbitron',sans-serif; font-size:0.75rem; font-weight:900; color:#334155; width:24px; text-align:center; flex-shrink:0; }
-  .all-name { font-size:0.85rem; font-weight:800; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .all-score { font-family:'Orbitron',sans-serif; font-size:0.95rem; font-weight:900; color:var(--c); flex-shrink:0; }
-
-  /* FOOTER */
-  .tv-footer { background:#0d0d2b; border-top:1px solid #1e293b; padding:6px 32px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-  .tv-footer span { font-size:0.65rem; color:#334155; letter-spacing:0.08em; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#07071a;color:white;font-family:'Nunito',sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.hdr{background:linear-gradient(135deg,#1a1a3e,#0d0d2b);border-bottom:3px solid #f59e0b;padding:10px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr h1{font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:900;background:linear-gradient(90deg,#f59e0b,#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:.06em}
+.hdr .sub{font-size:.6rem;color:#64748b;letter-spacing:.18em;text-transform:uppercase;font-weight:700}
+.live{display:flex;align-items:center;gap:7px;background:rgba(239,68,68,.12);border:1px solid #ef4444;border-radius:20px;padding:5px 14px;font-size:.75rem;font-weight:800;color:#ef4444;letter-spacing:.12em}
+.dot{width:8px;height:8px;background:#ef4444;border-radius:50%;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.nav{display:flex;background:#0d0d2b;border-bottom:1px solid #1e293b;flex-shrink:0;overflow-x:auto}
+.nb{padding:12px 22px;font-size:.85rem;font-weight:800;cursor:pointer;background:transparent;color:#475569;border:none;border-bottom:3px solid transparent;font-family:'Nunito',sans-serif;letter-spacing:.04em;transition:all .2s;white-space:nowrap}
+.nb.active{color:var(--c);border-bottom-color:var(--c);background:rgba(255,255,255,.03)}
+.view{flex:1;display:none;flex-direction:column;overflow:hidden}
+.view.active{display:flex}
+/* ALL GRID */
+.all-grid{flex:1;display:grid;grid-template-columns:repeat(6,1fr);overflow:hidden}
+.ac{display:flex;flex-direction:column;border-right:1px solid #1e293b;overflow:hidden}
+.ac:last-child{border-right:none}
+.ac-hdr{padding:10px 14px 8px;border-bottom:2px solid var(--c);font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:900;color:var(--c);flex-shrink:0}
+.ac-list{flex:1;overflow-y:auto;padding:4px 0;display:flex;flex-direction:column;gap:2px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.ar{display:flex;align-items:center;gap:8px;padding:7px 12px}
+.ar1{background:linear-gradient(90deg,rgba(251,191,36,.13),transparent)}
+.ar2{background:linear-gradient(90deg,rgba(148,163,184,.08),transparent)}
+.ar3{background:linear-gradient(90deg,rgba(180,120,60,.08),transparent)}
+.am{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+.ap{font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:900;color:#334155;width:24px;text-align:center;flex-shrink:0}
+.an{font-size:.85rem;font-weight:800;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.as{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:900;color:var(--c);flex-shrink:0}
+/* SINGLE GAME */
+.g-hdr{padding:20px 40px 12px;display:flex;align-items:baseline;gap:16px;flex-shrink:0}
+.g-title{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900}
+.g-cnt{font-size:.85rem;color:#475569;font-weight:700}
+.g-list{flex:1;overflow-y:auto;padding:0 40px 20px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.en{display:flex;align-items:center;gap:16px;padding:12px 20px;border-radius:12px;margin-bottom:6px}
+.en1{background:linear-gradient(90deg,rgba(251,191,36,.18),rgba(251,191,36,.04));border:1px solid rgba(251,191,36,.3)}
+.en2{background:linear-gradient(90deg,rgba(148,163,184,.12),rgba(148,163,184,.02));border:1px solid rgba(148,163,184,.2)}
+.en3{background:linear-gradient(90deg,rgba(180,120,60,.12),rgba(180,120,60,.02));border:1px solid rgba(180,120,60,.2)}
+.enn{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05)}
+.em{font-size:1.8rem;width:40px;text-align:center;flex-shrink:0}
+.ep{font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:900;color:#334155;width:40px;text-align:center;flex-shrink:0}
+.ename{font-size:1.2rem;font-weight:800;flex:1}
+.escore{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:900;flex-shrink:0}
+.ezap{font-size:.7rem;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:2px 8px;color:#22c55e;font-weight:800;margin-left:8px}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#1e293b;gap:12px}
+.empty .ico{font-size:4rem}
+/* 1V1 */
+.s1v1{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:0 40px 20px;overflow:hidden}
+.s1v1-col{display:flex;flex-direction:column;overflow:hidden}
+.s1v1-col h3{font-family:'Orbitron',sans-serif;font-size:.8rem;color:#64748b;letter-spacing:.12em;margin-bottom:12px;flex-shrink:0}
+.s1v1-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent}
+.mc{display:flex;align-items:center;border-radius:10px;overflow:hidden;border:1px solid rgba(139,92,246,.15);flex-shrink:0}
+.mw{background:rgba(139,92,246,.2);padding:10px 16px;font-size:1rem;font-weight:800;color:#a78bfa;flex:1}
+.mvs{background:#0d0d2b;padding:10px;font-size:.7rem;color:#334155;font-weight:700}
+.ml{background:rgba(255,255,255,.02);padding:10px 16px;font-size:1rem;font-weight:700;color:#475569;flex:1;text-align:right}
+.ftr{background:#0d0d2b;border-top:1px solid #1e293b;padding:6px 32px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.ftr span{font-size:.65rem;color:#334155;letter-spacing:.08em}
 </style>
 </head>
 <body>
-
-<div class="tv-header">
-  <div>
-    <div class="sub">Żabkowe Mistrzostwa w</div>
-    <h1>TRIKI</h1>
-  </div>
-  <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+<div class="hdr">
+  <div><div class="sub">Żabkowe Mistrzostwa w</div><h1>TRIKI</h1></div>
+  <div class="live"><div class="dot"></div>LIVE</div>
 </div>
-
 <div class="nav">
-  <button class="nav-btn active" style="--c:#f59e0b" onclick="showAll(this)">📊 Wszystkie</button>
-  <button class="nav-btn" style="--c:#22c55e" onclick="show('ninja',this)">🥷 Ninja Frog</button>
-  <button class="nav-btn" style="--c:#ef4444" onclick="show('bokser',this)">🥊 Bokser</button>
-  <button class="nav-btn" style="--c:#f59e0b" onclick="show('toss',this)">🎯 Toss</button>
-  <button class="nav-btn" style="--c:#10b981" onclick="show('snake',this)">🐍 Snake</button>
-  <button class="nav-btn" style="--c:#8b5cf6" onclick="show('snake1v1',this)">⚔️ Snake 1v1</button>
-  <button class="nav-btn" style="--c:#f97316" onclick="show('pilka',this)">⚽ Piłka Nożna</button>
+  <button class="nb active" style="--c:#f59e0b" onclick="showAll(this)">📊 Wszystkie</button>
+  <button class="nb" style="--c:#22c55e" onclick="show('ninja',this)">🥷 Ninja Frog</button>
+  <button class="nb" style="--c:#ef4444" onclick="show('bokser',this)">🥊 Bokser</button>
+  <button class="nb" style="--c:#f59e0b" onclick="show('toss',this)">🎯 Toss</button>
+  <button class="nb" style="--c:#10b981" onclick="show('snake',this)">🐍 Snake</button>
+  <button class="nb" style="--c:#8b5cf6" onclick="show('snake1v1',this)">⚔️ Snake 1v1</button>
+  <button class="nb" style="--c:#f97316" onclick="show('pilka',this)">⚽ Piłka Nożna</button>
 </div>
 
-<!-- GAME VIEWS -->
+<!-- WSZYSTKIE -->
 <div class="view active" id="view-all">
   <div class="all-grid">
-    <div class="all-col" style="--c:#22c55e">
-      <div class="all-header">🥷 Ninja Frog <span class="game-count" id="all-cnt-ninja"></span></div>
-      <div class="all-list" id="all-list-ninja"></div>
-    </div>
-    <div class="all-col" style="--c:#ef4444">
-      <div class="all-header">🥊 Bokser <span class="game-count" id="all-cnt-bokser"></span></div>
-      <div class="all-list" id="all-list-bokser"></div>
-    </div>
-    <div class="all-col" style="--c:#f59e0b">
-      <div class="all-header">🎯 Toss <span class="game-count" id="all-cnt-toss"></span></div>
-      <div class="all-list" id="all-list-toss"></div>
-    </div>
-    <div class="all-col" style="--c:#10b981">
-      <div class="all-header">🐍 Snake <span class="game-count" id="all-cnt-snake"></span></div>
-      <div class="all-list" id="all-list-snake"></div>
-    </div>
-    <div class="all-col" style="--c:#8b5cf6">
-      <div class="all-header">⚔️ Snake 1v1 <span class="game-count" id="all-cnt-snake1v1"></span></div>
-      <div class="all-list" id="all-list-snake1v1"></div>
-    </div>
-    <div class="all-col" style="--c:#f97316">
-      <div class="all-header">⚽ Piłka Nożna <span class="game-count" id="all-cnt-pilka"></span></div>
-      <div class="all-list" id="all-list-pilka"></div>
-    </div>
+    <div class="ac" style="--c:#22c55e"><div class="ac-hdr">🥷 Ninja Frog <span id="ac-ninja"></span></div><div class="ac-list" id="al-ninja"></div></div>
+    <div class="ac" style="--c:#ef4444"><div class="ac-hdr">🥊 Bokser <span id="ac-bokser"></span></div><div class="ac-list" id="al-bokser"></div></div>
+    <div class="ac" style="--c:#f59e0b"><div class="ac-hdr">🎯 Toss <span id="ac-toss"></span></div><div class="ac-list" id="al-toss"></div></div>
+    <div class="ac" style="--c:#10b981"><div class="ac-hdr">🐍 Snake <span id="ac-snake"></span></div><div class="ac-list" id="al-snake"></div></div>
+    <div class="ac" style="--c:#8b5cf6"><div class="ac-hdr">⚔️ Snake 1v1 <span id="ac-snake1v1"></span></div><div class="ac-list" id="al-snake1v1"></div></div>
+    <div class="ac" style="--c:#f97316"><div class="ac-hdr">⚽ Piłka Nożna <span id="ac-pilka"></span></div><div class="ac-list" id="al-pilka"></div></div>
   </div>
 </div>
 
-<div class="view" id="view-ninja">
-  <div class="game-header"><span class="game-title" style="color:#22c55e">🥷 Ninja Frog</span><span class="game-count" id="cnt-ninja"></span></div>
-  <div class="ranking-table" id="list-ninja"></div>
-</div>
-<div class="view" id="view-bokser">
-  <div class="game-header"><span class="game-title" style="color:#ef4444">🥊 Bokser</span><span class="game-count" id="cnt-bokser"></span></div>
-  <div class="ranking-table" id="list-bokser"></div>
-</div>
-<div class="view" id="view-toss">
-  <div class="game-header"><span class="game-title" style="color:#f59e0b">🎯 Toss</span><span class="game-count" id="cnt-toss"></span></div>
-  <div class="ranking-table" id="list-toss"></div>
-</div>
-<div class="view" id="view-snake">
-  <div class="game-header"><span class="game-title" style="color:#10b981">🐍 Snake</span><span class="game-count" id="cnt-snake"></span></div>
-  <div class="ranking-table" id="list-snake"></div>
-</div>
+<!-- SINGLE VIEWS -->
+<div class="view" id="view-ninja"><div class="g-hdr"><span class="g-title" style="color:#22c55e">🥷 Ninja Frog</span><span class="g-cnt" id="gc-ninja"></span></div><div class="g-list" id="gl-ninja"></div></div>
+<div class="view" id="view-bokser"><div class="g-hdr"><span class="g-title" style="color:#ef4444">🥊 Bokser</span><span class="g-cnt" id="gc-bokser"></span></div><div class="g-list" id="gl-bokser"></div></div>
+<div class="view" id="view-toss"><div class="g-hdr"><span class="g-title" style="color:#f59e0b">🎯 Toss</span><span class="g-cnt" id="gc-toss"></span></div><div class="g-list" id="gl-toss"></div></div>
+<div class="view" id="view-snake"><div class="g-hdr"><span class="g-title" style="color:#10b981">🐍 Snake</span><span class="g-cnt" id="gc-snake"></span></div><div class="g-list" id="gl-snake"></div></div>
 <div class="view" id="view-snake1v1">
-  <div class="game-header"><span class="game-title" style="color:#8b5cf6">⚔️ Snake 1v1</span><span class="game-count" id="cnt-snake1v1"></span></div>
-  <div class="s1v1-layout">
-    <div class="s1v1-panel">
-      <h3>KLASYFIKACJA GENERALNA</h3>
-      <div class="s1v1-list" id="list-snake1v1"></div>
-    </div>
-    <div class="s1v1-panel">
-      <h3>OSTATNIE MECZE</h3>
-      <div class="s1v1-list" id="list-snake1v1-matches"></div>
-    </div>
+  <div class="g-hdr"><span class="g-title" style="color:#8b5cf6">⚔️ Snake 1v1</span><span class="g-cnt" id="gc-snake1v1"></span></div>
+  <div class="s1v1">
+    <div class="s1v1-col"><h3>KLASYFIKACJA GENERALNA</h3><div class="s1v1-list" id="gl-snake1v1"></div></div>
+    <div class="s1v1-col"><h3>OSTATNIE MECZE</h3><div class="s1v1-list" id="gl-snake1v1-m"></div></div>
   </div>
 </div>
-<div class="view" id="view-pilka">
-  <div class="game-header"><span class="game-title" style="color:#f97316">⚽ Piłka Nożna</span><span class="game-count" id="cnt-pilka"></span></div>
-  <div class="ranking-table" id="list-pilka"></div>
-</div>
+<div class="view" id="view-pilka"><div class="g-hdr"><span class="g-title" style="color:#f97316">⚽ Piłka Nożna</span><span class="g-cnt" id="gc-pilka"></span></div><div class="g-list" id="gl-pilka"></div></div>
 
-<div class="tv-footer">
-  <span>LIVE — aktualizuje się automatycznie</span>
-  <span>top-art-agency.github.io/Ranking-Triki/</span>
-</div>
+<div class="ftr"><span>LIVE — aktualizuje się automatycznie</span><span>top-art-agency.github.io/Ranking-Triki/</span></div>
 
 <script>
-const DB_URL = 'https://ninja-frog-ranking-default-rtdb.europe-west1.firebasedatabase.app';
-const POLL = 5000;
-var lastHash = {};
+const DB='https://ninja-frog-ranking-default-rtdb.europe-west1.firebasedatabase.app';
+const POLL=5000;
+var H={};
 
-function showAll(btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-all').classList.add('active');
-  btn.classList.add('active');
+function show(k,b){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+k).classList.add('active');
+  b.classList.add('active');
+}
+function showAll(b){show('all',b);}
+
+function med(i){return i===0?'<span class="em">🥇</span>':i===1?'<span class="em">🥈</span>':i===2?'<span class="em">🥉</span>':`<span class="ep">${i+1}</span>`;}
+function amed(i){return i===0?'<span class="am">🥇</span>':i===1?'<span class="am">🥈</span>':i===2?'<span class="am">🥉</span>':`<span class="ap">${i+1}</span>`;}
+
+async function fetchDB(k){try{const r=await fetch(DB+'/'+k+'.json');return await r.json();}catch(e){return null;}}
+
+async function pollGame(k,c){
+  const val=await fetchDB(k);
+  const h=JSON.stringify(val);
+  if(h===H[k])return;
+  H[k]=h;
+  const entries=val?Object.values(val).sort((a,b)=>b.score-a.score):[];
+  const n=entries.length;
+
+  // all-view
+  const al=document.getElementById('al-'+k);
+  const ac=document.getElementById('ac-'+k);
+  if(ac)ac.textContent=n?n+' zaw.':'';
+  if(al)al.innerHTML=entries.map((e,i)=>`<div class="ar ${i<3?'ar'+(i+1):''}" style="--c:${c}">${amed(i)}<span class="an">${e.name}</span><span class="as">${e.score}</span></div>`).join('')||'<div style="padding:12px;color:#1e293b;font-size:.8rem">Brak wyników</div>';
+
+  // single-view
+  const gl=document.getElementById('gl-'+k);
+  const gc=document.getElementById('gc-'+k);
+  if(gc)gc.textContent=n+' zawodników';
+  if(gl)gl.innerHTML=entries.map((e,i)=>{
+    const cls=i<3?'en'+(i+1):'enn';
+    const z=e.jury?`<span class="ezap">🐸 #${e.jury}</span>`:'';
+    return `<div class="en ${cls}">${med(i)}<span class="ename">${e.name}${z}</span><span class="escore" style="color:${c}">${e.score}</span></div>`;
+  }).join('')||'<div class="empty"><div class="ico">🎮</div><p>Brak wyników</p></div>';
 }
 
-function show(key, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-'+key).classList.add('active');
-  btn.classList.add('active');
+async function poll1v1(){
+  const val=await fetchDB('snake1v1');
+  const h=JSON.stringify(val);
+  if(h===H['s1v1'])return;
+  H['s1v1']=h;
+  const matches=val?Object.values(val).filter(m=>m.winner):[];
+  const wins={};
+  matches.forEach(m=>{wins[m.winner]=(wins[m.winner]||0)+1;});
+  const sorted=Object.entries(wins).sort((a,b)=>b[1]-a[1]);
+
+  const ac=document.getElementById('ac-snake1v1');
+  const gc=document.getElementById('gc-snake1v1');
+  if(ac)ac.textContent=sorted.length+' zaw.';
+  if(gc)gc.textContent=matches.length+' meczów';
+
+  const allHtml=sorted.map(([n,w],i)=>`<div class="ar ${i<3?'ar'+(i+1):''}" style="--c:#8b5cf6">${amed(i)}<span class="an">${n}</span><span class="as">${w}W</span></div>`).join('')||'<div style="padding:12px;color:#1e293b;font-size:.8rem">Brak meczów</div>';
+  const al=document.getElementById('al-snake1v1');
+  if(al)al.innerHTML=allHtml;
+
+  const gl=document.getElementById('gl-snake1v1');
+  if(gl)gl.innerHTML=sorted.map(([n,w],i)=>`<div class="en ${i<3?'en'+(i+1):'enn'}">${med(i)}<span class="ename">${n}</span><span class="escore" style="color:#8b5cf6">${w}<span style="font-size:.6rem;color:#64748b;font-family:'Nunito',sans-serif"> W</span></span></div>`).join('')||'<div class="empty"><div class="ico">⚔️</div><p>Brak meczów</p></div>';
+
+  const ml=document.getElementById('gl-snake1v1-m');
+  const recent=matches.slice(-10).reverse();
+  if(ml)ml.innerHTML=recent.map(m=>`<div class="mc"><div class="mw">🏆 ${m.winner}</div><div class="mvs">VS</div><div class="ml">${m.loser||'?'}</div></div>`).join('')||'<div class="empty"><div class="ico">🏟️</div><p>Brak meczów</p></div>';
 }
 
-function medal(i) {
-  if(i===0) return '<span class="e-medal">🥇</span>';
-  if(i===1) return '<span class="e-medal">🥈</span>';
-  if(i===2) return '<span class="e-medal">🥉</span>';
-  return `<span class="e-pos">${i+1}</span>`;
-}
+const GAMES=[['ninja','#22c55e'],['bokser','#ef4444'],['toss','#f59e0b'],['snake','#10b981'],['pilka','#f97316']];
 
-async function fetchDB(key) {
-  try {
-    const r = await fetch(DB_URL+'/'+key+'.json');
-    return await r.json();
-  } catch(e) { return null; }
-}
-
-function hashVal(v) { return JSON.stringify(v); }
-
-async function pollGame(key, color) {
-  const val = await fetchDB(key);
-  const h = hashVal(val);
-  if(h === lastHash[key]) return;
-  lastHash[key] = h;
-
-  const list = document.getElementById('list-'+key);
-  const cnt  = document.getElementById('cnt-'+key);
-  if(!val) { list.innerHTML = '<div class="empty-state"><div class="ico">🎮</div><p>Brak wyników</p></div>'; return; }
-
-  const entries = Object.values(val).sort((a,b) => b.score - a.score);
-  cnt.textContent = entries.length + ' zawodników';
-
-  const allList = document.getElementById('all-list-'+key);
-  const allCnt  = document.getElementById('all-cnt-'+key);
-  if(allCnt) allCnt.textContent = entries.length + ' zaw.';
-
-  const allRows = entries.map((e,i) => {
-    const cls = i<3 ? `all-row-${i+1}` : '';
-    const am = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span class="all-pos">${i+1}</span>`;
-    const amTag = i<3 ? `<span class="all-medal">${am}</span>` : am;
-    return `<div class="all-row ${cls}" style="--c:${color}">${amTag}<span class="all-name">${e.name}</span><span class="all-score">${e.score}</span></div>`;
-  }).join('');
-  if(allList) allList.innerHTML = allRows || '<div style="padding:12px;color:#1e293b;font-size:0.8rem">Brak wyników</div>';
-
-  list.innerHTML = entries.map((e,i) => {
-    const cls = i<3 ? `entry-${i+1}` : 'entry-n';
-    const zappka = e.jury ? `<span class="e-zappka">🐸 #${e.jury}</span>` : '';
-    return `<div class="entry ${cls}">
-      ${medal(i)}
-      <span class="e-name">${e.name}${zappka}</span>
-      <span class="e-score" style="color:${color}">${e.score}</span>
-    </div>`;
-  }).join('');
-}
-
-async function pollSnake1v1() {
-  const val = await fetchDB('snake1v1');
-  const h = hashVal(val);
-  if(h === lastHash['snake1v1']) return;
-  lastHash['snake1v1'] = h;
-
-  const matches = val ? Object.values(val).filter(m => m.winner) : [];
-  document.getElementById('cnt-snake1v1').textContent = matches.length + ' meczów';
-  const allCnt1v1 = document.getElementById('all-cnt-snake1v1');
-  if(allCnt1v1) allCnt1v1.textContent = sorted.length + ' zaw.';
-
-  // Standings
-  const wins = {};
-  matches.forEach(m => { wins[m.winner] = (wins[m.winner]||0)+1; });
-  const sorted = Object.entries(wins).sort((a,b) => b[1]-a[1]);
-  // Update all-view snake1v1
-  const allSl = document.getElementById('all-list-snake1v1');
-  if(allSl) allSl.innerHTML = sorted.length
-    ? sorted.map(([name,w],i) => {
-        const am = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span class="all-pos">${i+1}</span>`;
-        const amTag = i<3 ? `<span class="all-medal">${am}</span>` : am;
-        return `<div class="all-row ${i<3?'all-row-'+(i+1):''}" style="--c:#8b5cf6">${amTag}<span class="all-name">${name}</span><span class="all-score">${w}W</span></div>`;
-      }).join('')
-    : '<div style="padding:12px;color:#1e293b;font-size:0.8rem">Brak meczów</div>';
-
-  const sl = document.getElementById('list-snake1v1');
-  sl.innerHTML = sorted.length
-    ? sorted.map(([ name,w ],i) => `<div class="entry ${i<3?'entry-'+(i+1):'entry-n'}">
-        ${medal(i)}
-        <span class="e-name">${name}</span>
-        <span class="e-score" style="color:#8b5cf6">${w}<span style="font-size:0.6rem;color:#64748b;font-family:'Nunito',sans-serif"> W</span></span>
-      </div>`).join('')
-    : '<div class="empty-state"><div class="ico">⚔️</div><p>Brak meczów</p></div>';
-
-  // Recent matches
-  const recent = matches.slice(-10).reverse();
-  const ml = document.getElementById('list-snake1v1-matches');
-  ml.innerHTML = recent.length
-    ? recent.map(m => `<div class="match-card">
-        <div class="match-winner">🏆 ${m.winner}</div>
-        <div class="match-vs">VS</div>
-        <div class="match-loser">${m.loser||'?'}</div>
-      </div>`).join('')
-    : '<div class="empty-state"><div class="ico">🏟️</div><p>Brak meczów</p></div>';
-}
-
-const GAMES = [
-  ['ninja','#22c55e'], ['bokser','#ef4444'], ['toss','#f59e0b'],
-  ['snake','#10b981'], ['pilka','#f97316']
-];
-
-async function pollAll() {
-  await Promise.all(GAMES.map(([k,c]) => pollGame(k,c)));
-  await pollSnake1v1();
+async function pollAll(){
+  await Promise.all(GAMES.map(([k,c])=>pollGame(k,c)));
+  await poll1v1();
 }
 
 pollAll();
-setInterval(pollAll, POLL);
-</script>
-</body>
-</html>  .entry-1 { background:linear-gradient(90deg,rgba(251,191,36,0.18),rgba(251,191,36,0.04)); border:1px solid rgba(251,191,36,0.3); }
-  .entry-2 { background:linear-gradient(90deg,rgba(148,163,184,0.12),rgba(148,163,184,0.02)); border:1px solid rgba(148,163,184,0.2); }
-  .entry-3 { background:linear-gradient(90deg,rgba(180,120,60,0.12),rgba(180,120,60,0.02)); border:1px solid rgba(180,120,60,0.2); }
-  .entry-n { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); }
-
-  .e-medal { font-size:1.8rem; width:40px; text-align:center; flex-shrink:0; }
-  .e-pos { font-family:'Orbitron',sans-serif; font-size:1rem; font-weight:900; color:#334155; width:40px; text-align:center; flex-shrink:0; }
-  .e-name { font-size:1.2rem; font-weight:800; flex:1; }
-  .e-score { font-family:'Orbitron',sans-serif; font-size:1.5rem; font-weight:900; flex-shrink:0; }
-  .e-zappka { font-size:0.7rem; background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); border-radius:20px; padding:2px 8px; color:#22c55e; font-weight:800; margin-left:8px; }
-
-  .empty-state { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#1e293b; gap:12px; }
-  .empty-state .ico { font-size:4rem; }
-  .empty-state p { font-size:1rem; }
-
-  /* SNAKE 1V1 */
-  .s1v1-layout { flex:1; display:grid; grid-template-columns:1fr 1fr; gap:32px; padding:0 40px 20px; overflow:hidden; }
-  .s1v1-panel { display:flex; flex-direction:column; overflow:hidden; }
-  .s1v1-panel h3 { font-family:'Orbitron',sans-serif; font-size:0.8rem; color:#64748b; letter-spacing:0.12em; margin-bottom:12px; flex-shrink:0; }
-  .s1v1-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.1) transparent; }
-
-  .match-card { display:flex; align-items:center; border-radius:10px; overflow:hidden; border:1px solid rgba(139,92,246,0.15); flex-shrink:0; }
-  .match-winner { background:rgba(139,92,246,0.2); padding:10px 16px; font-size:1rem; font-weight:800; color:#a78bfa; flex:1; }
-  .match-vs { background:#0d0d2b; padding:10px 10px; font-size:0.7rem; color:#334155; font-weight:700; flex-shrink:0; }
-  .match-loser { background:rgba(255,255,255,0.02); padding:10px 16px; font-size:1rem; font-weight:700; color:#475569; flex:1; text-align:right; }
-
-  /* FOOTER */
-  .tv-footer { background:#0d0d2b; border-top:1px solid #1e293b; padding:6px 32px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
-  .tv-footer span { font-size:0.65rem; color:#334155; letter-spacing:0.08em; }
-</style>
-</head>
-<body>
-
-<div class="tv-header">
-  <div>
-    <div class="sub">Żabkowe Mistrzostwa w</div>
-    <h1>TRIKI</h1>
-  </div>
-  <div class="live-badge"><div class="live-dot"></div>LIVE</div>
-</div>
-
-<div class="nav">
-  <button class="nav-btn active" style="--c:#22c55e" onclick="show('ninja',this)">🥷 Ninja Frog</button>
-  <button class="nav-btn" style="--c:#ef4444" onclick="show('bokser',this)">🥊 Bokser</button>
-  <button class="nav-btn" style="--c:#f59e0b" onclick="show('toss',this)">🎯 Toss</button>
-  <button class="nav-btn" style="--c:#10b981" onclick="show('snake',this)">🐍 Snake</button>
-  <button class="nav-btn" style="--c:#8b5cf6" onclick="show('snake1v1',this)">⚔️ Snake 1v1</button>
-  <button class="nav-btn" style="--c:#f97316" onclick="show('pilka',this)">⚽ Piłka Nożna</button>
-</div>
-
-<!-- GAME VIEWS -->
-<div class="view active" id="view-ninja">
-  <div class="game-header"><span class="game-title" style="color:#22c55e">🥷 Ninja Frog</span><span class="game-count" id="cnt-ninja"></span></div>
-  <div class="ranking-table" id="list-ninja"></div>
-</div>
-<div class="view" id="view-bokser">
-  <div class="game-header"><span class="game-title" style="color:#ef4444">🥊 Bokser</span><span class="game-count" id="cnt-bokser"></span></div>
-  <div class="ranking-table" id="list-bokser"></div>
-</div>
-<div class="view" id="view-toss">
-  <div class="game-header"><span class="game-title" style="color:#f59e0b">🎯 Toss</span><span class="game-count" id="cnt-toss"></span></div>
-  <div class="ranking-table" id="list-toss"></div>
-</div>
-<div class="view" id="view-snake">
-  <div class="game-header"><span class="game-title" style="color:#10b981">🐍 Snake</span><span class="game-count" id="cnt-snake"></span></div>
-  <div class="ranking-table" id="list-snake"></div>
-</div>
-<div class="view" id="view-snake1v1">
-  <div class="game-header"><span class="game-title" style="color:#8b5cf6">⚔️ Snake 1v1</span><span class="game-count" id="cnt-snake1v1"></span></div>
-  <div class="s1v1-layout">
-    <div class="s1v1-panel">
-      <h3>KLASYFIKACJA GENERALNA</h3>
-      <div class="s1v1-list" id="list-snake1v1"></div>
-    </div>
-    <div class="s1v1-panel">
-      <h3>OSTATNIE MECZE</h3>
-      <div class="s1v1-list" id="list-snake1v1-matches"></div>
-    </div>
-  </div>
-</div>
-<div class="view" id="view-pilka">
-  <div class="game-header"><span class="game-title" style="color:#f97316">⚽ Piłka Nożna</span><span class="game-count" id="cnt-pilka"></span></div>
-  <div class="ranking-table" id="list-pilka"></div>
-</div>
-
-<div class="tv-footer">
-  <span>LIVE — aktualizuje się automatycznie</span>
-  <span>top-art-agency.github.io/Ranking-Triki/</span>
-</div>
-
-<script>
-const DB_URL = 'https://ninja-frog-ranking-default-rtdb.europe-west1.firebasedatabase.app';
-const POLL = 5000;
-var lastHash = {};
-
-function show(key, btn) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('view-'+key).classList.add('active');
-  btn.classList.add('active');
-}
-
-function medal(i) {
-  if(i===0) return '<span class="e-medal">🥇</span>';
-  if(i===1) return '<span class="e-medal">🥈</span>';
-  if(i===2) return '<span class="e-medal">🥉</span>';
-  return `<span class="e-pos">${i+1}</span>`;
-}
-
-async function fetchDB(key) {
-  try {
-    const r = await fetch(DB_URL+'/'+key+'.json');
-    return await r.json();
-  } catch(e) { return null; }
-}
-
-function hashVal(v) { return JSON.stringify(v); }
-
-async function pollGame(key, color) {
-  const val = await fetchDB(key);
-  const h = hashVal(val);
-  if(h === lastHash[key]) return;
-  lastHash[key] = h;
-
-  const list = document.getElementById('list-'+key);
-  const cnt  = document.getElementById('cnt-'+key);
-  if(!val) { list.innerHTML = '<div class="empty-state"><div class="ico">🎮</div><p>Brak wyników</p></div>'; return; }
-
-  const entries = Object.values(val).sort((a,b) => b.score - a.score);
-  cnt.textContent = entries.length + ' zawodników';
-
-  list.innerHTML = entries.map((e,i) => {
-    const cls = i<3 ? `entry-${i+1}` : 'entry-n';
-    const zappka = e.jury ? `<span class="e-zappka">🐸 #${e.jury}</span>` : '';
-    return `<div class="entry ${cls}">
-      ${medal(i)}
-      <span class="e-name">${e.name}${zappka}</span>
-      <span class="e-score" style="color:${color}">${e.score}</span>
-    </div>`;
-  }).join('');
-}
-
-async function pollSnake1v1() {
-  const val = await fetchDB('snake1v1');
-  const h = hashVal(val);
-  if(h === lastHash['snake1v1']) return;
-  lastHash['snake1v1'] = h;
-
-  const matches = val ? Object.values(val).filter(m => m.winner) : [];
-  document.getElementById('cnt-snake1v1').textContent = matches.length + ' meczów';
-
-  // Standings
-  const wins = {};
-  matches.forEach(m => { wins[m.winner] = (wins[m.winner]||0)+1; });
-  const sorted = Object.entries(wins).sort((a,b) => b[1]-a[1]);
-  const sl = document.getElementById('list-snake1v1');
-  sl.innerHTML = sorted.length
-    ? sorted.map(([ name,w ],i) => `<div class="entry ${i<3?'entry-'+(i+1):'entry-n'}">
-        ${medal(i)}
-        <span class="e-name">${name}</span>
-        <span class="e-score" style="color:#8b5cf6">${w}<span style="font-size:0.6rem;color:#64748b;font-family:'Nunito',sans-serif"> W</span></span>
-      </div>`).join('')
-    : '<div class="empty-state"><div class="ico">⚔️</div><p>Brak meczów</p></div>';
-
-  // Recent matches
-  const recent = matches.slice(-10).reverse();
-  const ml = document.getElementById('list-snake1v1-matches');
-  ml.innerHTML = recent.length
-    ? recent.map(m => `<div class="match-card">
-        <div class="match-winner">🏆 ${m.winner}</div>
-        <div class="match-vs">VS</div>
-        <div class="match-loser">${m.loser||'?'}</div>
-      </div>`).join('')
-    : '<div class="empty-state"><div class="ico">🏟️</div><p>Brak meczów</p></div>';
-}
-
-const GAMES = [
-  ['ninja','#22c55e'], ['bokser','#ef4444'], ['toss','#f59e0b'],
-  ['snake','#10b981'], ['pilka','#f97316']
-];
-
-async function pollAll() {
-  await Promise.all(GAMES.map(([k,c]) => pollGame(k,c)));
-  await pollSnake1v1();
-}
-
-pollAll();
-setInterval(pollAll, POLL);
+setInterval(pollAll,POLL);
 </script>
 </body>
 </html>
