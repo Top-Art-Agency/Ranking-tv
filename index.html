@@ -51,6 +51,7 @@ body{background:#07071a;color:white;font-family:'Nunito',sans-serif;height:100vh
 .ename{font-size:1.2rem;font-weight:800;flex:1}
 .escore{font-family:'Orbitron',sans-serif;font-size:1.5rem;font-weight:900;flex-shrink:0}
 .ezap{font-size:.7rem;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:2px 8px;color:#22c55e;font-weight:800;margin-left:8px}
+.rnd-hdr{font-family:'Orbitron',sans-serif;font-size:.7rem;font-weight:900;color:#475569;letter-spacing:.12em;padding:10px 20px 4px;border-top:1px solid #1e293b;margin-top:4px;text-transform:uppercase}
 .empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#1e293b;gap:12px}
 .empty .ico{font-size:4rem}
 /* 1V1 */
@@ -149,11 +150,27 @@ async function pollGame(k,c){
   const gl=document.getElementById('gl-'+k);
   const gc=document.getElementById('gc-'+k);
   if(gc)gc.textContent=n+' zawodników';
-  if(gl)gl.innerHTML=entries.map((e,i)=>{
-    const cls=i<3?'en'+(i+1):'enn';
-    const z=e.jury?`<span class="ezap">🐸 #${e.jury}</span>`:'';
-    return `<div class="en ${cls}">${med(i)}<span class="ename">${e.name}${z}</span><span class="escore" style="color:${c}">${e.score}</span></div>`;
-  }).join('')||'<div class="empty"><div class="ico">🎮</div><p>Brak wyników</p></div>';
+  if(gl){
+    if((k==='snake'||k==='pilka')&&entries.length&&entries[0].round){
+      const rounds={};
+      entries.forEach(e=>{const r=e.round||'?';if(!rounds[r])rounds[r]=[];rounds[r].push(e);});
+      let html='';
+      Object.keys(rounds).sort().forEach(r=>{
+        html+=`<div class="rnd-hdr">Runda ${r}</div>`;
+        rounds[r].sort((a,b)=>b.score-a.score).forEach((e,i)=>{
+          const cls=i<3?'en'+(i+1):'enn';
+          html+=`<div class="en ${cls}">${med(i)}<span class="ename">${e.name}</span><span class="escore" style="color:${c}">${e.score}</span></div>`;
+        });
+      });
+      gl.innerHTML=html||'<div class="empty"><div class="ico">🎮</div><p>Brak wyników</p></div>';
+    } else {
+      gl.innerHTML=entries.map((e,i)=>{
+        const cls=i<3?'en'+(i+1):'enn';
+        const z=e.jury?`<span class="ezap">🐸 #${e.jury}</span>`:'';
+        return `<div class="en ${cls}">${med(i)}<span class="ename">${e.name}${z}</span><span class="escore" style="color:${c}">${e.score}</span></div>`;
+      }).join('')||'<div class="empty"><div class="ico">🎮</div><p>Brak wyników</p></div>';
+    }
+  }
 }
 
 async function poll1v1(){
